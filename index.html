@@ -109,7 +109,20 @@ const short = n => {
 };
 const pct = (a, b) => b ? a / b * 100 : 0;
 const fmtPct = n => (n || 0).toFixed(1) + '%';
-const unique = a => [...new Set(a)].sort((a, b) => String(a).localeCompare(String(b), 'id'));
+
+// Helper Ambil Nilai Properti Tahan Terhadap Variasi Huruf Besar/Kecil
+function getVal(obj, keys) {
+  if (!obj) return '';
+  for (let k of keys) {
+    if (obj[k] !== undefined && obj[k] !== null) return String(obj[k]).trim();
+  }
+  return '';
+}
+
+function getKec(x) { return getVal(x, ['kecamatan', 'Kecamatan', 'KECAMATAN', 'kec']); }
+function getDesa(x) { return getVal(x, ['desa', 'Desa', 'DESA', 'namadesa']); }
+
+const unique = a => [...new Set(a)].filter(Boolean).sort((a, b) => String(a).localeCompare(String(b), 'id'));
 
 function fill(el, arr, first) {
   el.innerHTML = `<option value="">${first}</option>` + arr.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
@@ -123,6 +136,7 @@ async function fetchData() {
   try {
     const res = await fetch(GOOGLE_SCRIPT_URL);
     DATA = await res.json();
+    initFilterKecamatan();
     syncDesa();
     render();
     const now = new Date();
@@ -135,19 +149,31 @@ async function fetchData() {
   }
 }
 
+function initFilterKecamatan() {
+  fill($('kec'), unique(DATA.map(x => getKec(x))), 'Semua Kecamatan');
+}
+
 function syncDesa() {
-  fill($('kec'), unique(DATA.map(x => x.kecamatan)), 'Semua Kecamatan');
   let old = $('desa').value, k = $('kec').value;
-  fill($('desa'), unique(DATA.filter(x => !k || x.kecamatan === k).map(x => x.desa)), 'Semua Desa');
+  fill($('desa'), unique(DATA.filter(x => !k || getKec(x) === k).map(x => getDesa(x))), 'Semua Desa');
   if ([...$('desa').options].some(o => o.value === old)) $('desa').value = old;
 }
 
 function rowsNow() {
   let k = $('kec').value, d = $('desa').value, q = $('search').value.toLowerCase().trim();
-  return DATA.filter(x => (!k || x.kecamatan === k) && (!d || x.desa === d) && (!q || x.desa.toLowerCase().includes(q) || x.kecamatan.toLowerCase().includes(q)));
+  return DATA.filter(x => {
+    let kecX = getKec(x);
+    let desaX = getDesa(x);
+    return (!k || kecX === k) && (!d || desaX === d) && (!q || desaX.toLowerCase().includes(q) || kecX.toLowerCase().includes(q));
+  });
 }
 
-function sum(a, key) { return a.reduce((t, x) => t + (Number(x[key]) || 0), 0); }
+function sum(a, key) { 
+  return a.reduce((t, x) => {
+    let val = x[key] ?? x[key.toLowerCase()] ?? 0;
+    return t + (Number(val) || 0);
+  }, 0); 
+}
 
 function render() {
   let a = rowsNow(), n = a.length, pA = sum(a, 'paguADD'), rA = sum(a, 'realisasiADD'), pD = sum(a, 'paguDDS'), rD = sum(a, 'realisasiDDS'), other = sum(a, 'danaLainnya'), real = sum(a, 'totalRealisasi'), pagu = pA + pD, ratio = pct(real, pagu);
@@ -182,7 +208,10 @@ function render() {
     </div>`;
 
   let g = {};
-  a.forEach(x => (g[x.kecamatan] ??= []).push(x));
+  a.forEach(x => {
+    let k = getKec(x);
+    (g[k] ??= []).push(x);
+  });
   let ks = Object.keys(g).sort((x, y) => x.localeCompare(y, 'id'));
   
   $('kecChart').innerHTML = ks.length ? ks.map(k => {
@@ -197,11 +226,11 @@ function render() {
 
   $('count').textContent = n + ' desa ditampilkan';
   
-  $('tbody').innerHTML = a.length ? a.slice().sort((x, y) => x.kecamatan.localeCompare(y.kecamatan, 'id') || x.desa.localeCompare(y.desa, 'id')).map((x, i) => `
+  $('tbody').innerHTML = a.length ? a.slice().sort((x, y) => getKec(x).localeCompare(getKec(y), 'id') || getDesa(x).localeCompare(getDesa(y), 'id')).map((x, i) => `
     <tr>
       <td>${i + 1}</td>
-      <td>${esc(x.kecamatan)}</td>
-      <td><b>${esc(x.desa)}</b></td>
+      <td>${esc(getKec(x))}</td>
+      <td><b>${esc(getDesa(x))}</b></td>
       <td>${rupiah(x.totalDana)}</td>
       <td>${rupiah(x.paguADD)}</td>
       <td>${rupiah(x.realisasiADD)}</td>
@@ -221,21 +250,11 @@ $('search').addEventListener('input', render);
 $('reset').addEventListener('click', () => { $('kec').value = ''; $('desa').value = ''; $('search').value = ''; syncDesa(); render(); });
 $('sync').addEventListener('click', fetchData);
 
-$('csv').addEventListener('click', () => {
-  let a = rowsNow(), headers = ['Kecamatan','Desa','Total Dana','Pagu ADD','Realisasi ADD','% ADD','Pagu DDS','Realisasi DDS','% DDS','Dana Lainnya','Total Realisasi'];
-  let keys = ['kecamatan','desa','totalDana','paguADD','realisasiADD','persenADD','paguDDS','realisasiDDS','persenDDS','danaLainnya','totalRealisasi'];
-  let lines = [headers, ...a.map(x => keys.map(k => x[k]))].map(r => r.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(';')).join('\r\n');
-  let blob = new Blob(['\ufeff' + lines], {type: 'text/csv;charset=utf-8;'}), url = URL.createObjectURL(blob), link = document.createElement('a');
-  link.href = url;
-  link.download = 'Realisasi_Dana_Desa_Sikka.csv';
-  link.click();
-  URL.revokeObjectURL(url);
-});
-
-// Auto-Refresh tiap 5 menit (300.000 ms)
+// Auto-Refresh tiap 5 menit
 setInterval(fetchData, 300000);
 
 // Inisialisasi awal
+fetchData();
 fetchData();
 </script>
 </body>
