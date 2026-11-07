@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard Realisasi Dana Desa | Kabupaten Sikka</title>
+<style>
+:root{--navy:#142b43;--blue:#28618b;--teal:#16877c;--gold:#d99b32;--red:#c65c55;--ink:#25384a;--muted:#718196;--line:#e5ebf1;--bg:#f2f5f8;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,"Segoe UI",Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(115deg,#12283f,#20577c);color:white;padding:32px clamp(18px,4vw,58px) 37px;position:relative;overflow:hidden}
+header:after{content:"";position:absolute;width:340px;height:340px;border:1px solid #ffffff20;border-radius:50%;right:-80px;top:-190px;box-shadow:0 0 0 35px #ffffff08,0 0 0 75px #ffffff06}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#b7d1e5;font-weight:800}h1{font-size:clamp(24px,4vw,38px);margin:10px 0 7px;letter-spacing:-.8px}.subtitle{font-size:14px;color:#d3e1ec}.asof{display:inline-block;margin-top:17px;border:1px solid #ffffff40;border-radius:30px;padding:7px 12px;font-size:11px;color:#e3edf5}
+main{max-width:1450px;margin:auto;padding:23px clamp(14px,3vw,38px) 42px}
+.panel{background:white;border:1px solid var(--line);border-radius:15px;box-shadow:0 5px 18px #19324b09}
+.filters{display:grid;grid-template-columns:1.2fr 1.2fr 1.4fr auto auto;gap:13px;padding:17px 18px;align-items:end}
+label{display:block;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#718196;margin:0 0 7px}
+select,input{width:100%;border:1px solid #d8e1ea;border-radius:9px;padding:11px 12px;font-size:13px;background:white;color:#24384b;outline:none}
+select:focus,input:focus{border-color:#4386b8;box-shadow:0 0 0 3px #4386b81a}
+button{border:0;border-radius:9px;padding:11px 15px;background:#eaf1f7;color:#244a6b;font-weight:800;font-size:12px;cursor:pointer;transition:all 0.2s}
+button:hover{background:#dce9f4}
+button.btn-sync{background:#16877c;color:white}button.btn-sync:hover{background:#116860}
+.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:25px 2px 13px}.heading h2{font-size:17px;margin:0;color:#1b3047}.note{font-size:11px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.kpi{padding:17px 18px;position:relative;overflow:hidden}.kpi:after{content:"";position:absolute;width:70px;height:70px;border-radius:50%;right:-18px;top:-25px;background:#edf3f8}
+.kpi .klabel{font-size:10px;color:#718196;text-transform:uppercase;letter-spacing:.7px;font-weight:800}.kpi strong{display:block;font-size:clamp(20px,2.5vw,29px);margin:9px 0 3px;color:#19334d;letter-spacing:-.5px}.kpi small{color:#8492a3;font-size:11px}.kpi.teal strong{color:var(--teal)}.kpi.blue strong{color:var(--blue)}.kpi.gold strong{color:#a97519}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}.chart{padding:19px 20px}.chart h3{font-size:14px;margin:0 0 5px}.chart .desc{font-size:11px;color:var(--muted);margin-bottom:17px}
+.barrow{display:grid;grid-template-columns:minmax(110px,150px) 1fr minmax(40px,auto);gap:10px;align-items:center;margin:14px 0;font-size:11px}.track{height:13px;background:#edf1f5;border-radius:20px;overflow:hidden;display:flex}.seg{height:100%}.val{text-align:right;font-weight:800;color:#526579;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:17px;color:#65768a;font-size:10px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.progress-list{display:grid;gap:14px}.progress-item .phead{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;gap:10px}.progress-item .phead b{color:#29465e}.progress-item .phead span{color:#687c8f;font-weight:700}.progress{height:10px;background:#edf1f5;border-radius:20px;overflow:hidden}.progress i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#28618b,#168b83)}
+.tabletop{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line)}.tabletop h3{font-size:14px;margin:0}.tableactions{display:flex;gap:8px;align-items:center}.tableactions input{max-width:230px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:1120px}th,td{padding:11px 12px;text-align:right;border-bottom:1px solid #edf1f5;font-size:11px;white-space:nowrap}th{background:#f8fafc;color:#65768a;text-transform:uppercase;font-size:9px;letter-spacing:.55px;position:sticky;top:0}th:nth-child(2),th:nth-child(3),td:nth-child(2),td:nth-child(3){text-align:left}tbody tr:hover{background:#f8fbfd}td:first-child,th:first-child{text-align:center}.pct{font-weight:800;color:#176e67}.empty{text-align:center;padding:28px;color:#8190a1}.footer{text-align:center;font-size:10px;color:#8795a5;margin-top:20px}
+.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.85);display:flex;justify-content:center;align-items:center;z-index:9999;font-weight:bold;color:var(--navy)}
+@media(max-width:900px){.filters{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}.twocol{grid-template-columns:1fr}}
+@media(max-width:520px){.filters{grid-template-columns:1fr}.tabletop{align-items:flex-start;flex-direction:column}.tableactions{width:100%}.tableactions input{max-width:none}.heading{align-items:flex-start;flex-direction:column}}
+@media print{body{background:white}header{print-color-adjust:exact;-webkit-print-color-adjust:exact}.filters,.tableactions,button{display:none!important}.panel{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div id="loader" class="loading-overlay">Memuat data realisasi keuangan terbaru...</div>
+
+<header>
+  <div class="eyebrow">Monitoring Keuangan Desa · Kabupaten Sikka</div>
+  <h1>Realisasi Dana Desa</h1>
+  <div class="subtitle">Dashboard progres pencairan Alokasi Dana Desa (ADD), Dana Desa (DDS), dan dana lainnya</div>
+  <div class="asof" id="lastUpdate">REAL-TIME GOOGLE SHEETS</div>
+</header>
+
+<main>
+<section class="panel filters">
+  <div><label for="kec">Kecamatan</label><select id="kec"><option value="">Semua Kecamatan</option></select></div>
+  <div><label for="desa">Desa</label><select id="desa"><option value="">Semua Desa</option></select></div>
+  <div><label for="search">Cari desa</label><input id="search" placeholder="Ketik nama desa..."></div>
+  <div><button id="reset">↺ Reset Filter</button></div>
+  <div><button id="sync" class="btn-sync">🔄 Sync Data</button></div>
+</section>
+
+<div class="heading"><h2>Ikhtisar Realisasi</h2><span class="note" id="scope">Seluruh kecamatan dan desa</span></div>
+<section class="kpis">
+  <div class="panel kpi"><div class="klabel">Total Desa</div><strong id="nDesa">—</strong><small>Desa sesuai cakupan filter</small></div>
+  <div class="panel kpi blue"><div class="klabel">Total Pagu Dana</div><strong id="pagu">—</strong><small>Akumulasi total dana</small></div>
+  <div class="panel kpi teal"><div class="klabel">Total Realisasi</div><strong id="realisasi">—</strong><small id="realisasiSub">ADD + DDS + dana lainnya</small></div>
+  <div class="panel kpi gold"><div class="klabel">Rasio Realisasi</div><strong id="rasio">—</strong><small>Realisasi dibanding total pagu ADD + DDS</small></div>
+</section>
+
+<div class="heading"><h2>Analisis Penyerapan</h2><span class="note">Nilai dan persentase dihitung dari data terpilih</span></div>
+<section class="twocol">
+  <div class="panel chart"><h3>Perbandingan Pagu dan Realisasi</h3><div class="desc">ADD dan DDS dalam cakupan filter aktif</div><div id="fundChart"></div><div class="legend"><span><i class="dot" style="background:#28618b"></i>Pagu</span><span><i class="dot" style="background:#168b83"></i>Realisasi</span></div></div>
+  <div class="panel chart"><h3>Persentase Penyerapan</h3><div class="desc">Rasio realisasi agregat terhadap pagu masing-masing sumber dana</div><div id="percentChart" class="progress-list"></div></div>
+</section>
+
+<div class="heading"><h2>Rekapitulasi per Kecamatan</h2><span class="note">Total realisasi dan tingkat penyerapan ADD + DDS</span></div>
+<section class="panel chart"><div id="kecChart"></div></section>
+
+<div class="heading"><h2>Rincian Realisasi per Desa</h2><span class="note" id="count">—</span></div>
+<section class="panel" style="overflow:hidden">
+  <div class="tabletop">
+    <h3>Data Keuangan Desa</h3>
+    <div class="tableactions">
+      <button id="csv">Unduh CSV</button>
+      <button onclick="window.print()">Cetak / PDF</button>
+    </div>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>No.</th><th>Kecamatan</th><th>Desa</th><th>Total Dana</th><th>Pagu ADD</th><th>Realisasi ADD</th><th>% ADD</th><th>Pagu DDS</th><th>Realisasi DDS</th><th>% DDS</th><th>Dana Lainnya</th><th>Total Realisasi</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<div class="footer">Sumber: Data Live Google Sheets Dinas PMD Kab. Sikka · Angka dalam Rupiah (Rp)</div>
+</main>
+
+<script>
+// MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzSfVnaW9Ev_8IB1Rtnt55c_u2c3q4Up1qjL86imrfAbPLJgh3n4uSdStBE5N2HrrCEWQ/exec";
+
+let DATA = [];
+const $ = id => document.getElementById(id);
+const rupiah = n => 'Rp ' + Math.round(n || 0).toLocaleString('id-ID');
+const short = n => {
+  if (Math.abs(n) >= 1e12) return 'Rp ' + (n / 1e12).toFixed(2) + ' T';
+  if (Math.abs(n) >= 1e9) return 'Rp ' + (n / 1e9).toFixed(2) + ' M';
+  if (Math.abs(n) >= 1e6) return 'Rp ' + (n / 1e6).toFixed(1) + ' jt';
+  return rupiah(n);
+};
+const pct = (a, b) => b ? a / b * 100 : 0;
+const fmtPct = n => (n || 0).toFixed(1) + '%';
+const unique = a => [...new Set(a)].sort((a, b) => String(a).localeCompare(String(b), 'id'));
+
+function fill(el, arr, first) {
+  el.innerHTML = `<option value="">${first}</option>` + arr.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join('');
+}
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function fetchData() {
+  $('loader').style.display = 'flex';
+  try {
+    const res = await fetch(GOOGLE_SCRIPT_URL);
+    DATA = await res.json();
+    syncDesa();
+    render();
+    const now = new Date();
+    $('lastUpdate').textContent = 'UPDATE: ' + now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+  } catch (err) {
+    alert("Gagal memuat data dari Google Sheets. Pastikan URL Apps Script sudah benar.");
+    console.error(err);
+  } finally {
+    $('loader').style.display = 'none';
+  }
+}
+
+function syncDesa() {
+  fill($('kec'), unique(DATA.map(x => x.kecamatan)), 'Semua Kecamatan');
+  let old = $('desa').value, k = $('kec').value;
+  fill($('desa'), unique(DATA.filter(x => !k || x.kecamatan === k).map(x => x.desa)), 'Semua Desa');
+  if ([...$('desa').options].some(o => o.value === old)) $('desa').value = old;
+}
+
+function rowsNow() {
+  let k = $('kec').value, d = $('desa').value, q = $('search').value.toLowerCase().trim();
+  return DATA.filter(x => (!k || x.kecamatan === k) && (!d || x.desa === d) && (!q || x.desa.toLowerCase().includes(q) || x.kecamatan.toLowerCase().includes(q)));
+}
+
+function sum(a, key) { return a.reduce((t, x) => t + (Number(x[key]) || 0), 0); }
+
+function render() {
+  let a = rowsNow(), n = a.length, pA = sum(a, 'paguADD'), rA = sum(a, 'realisasiADD'), pD = sum(a, 'paguDDS'), rD = sum(a, 'realisasiDDS'), other = sum(a, 'danaLainnya'), real = sum(a, 'totalRealisasi'), pagu = pA + pD, ratio = pct(real, pagu);
+  
+  $('nDesa').textContent = n.toLocaleString('id-ID');
+  $('pagu').textContent = short(pagu);
+  $('realisasi').textContent = short(real);
+  $('rasio').textContent = fmtPct(ratio);
+  
+  $('realisasiSub').textContent = rupiah(real) + ' total realisasi';
+  $('scope').textContent = $('desa').value ? `Desa ${$('desa').value} · ${$('kec').value}` : ($('kec').value || 'Seluruh kecamatan');
+  
+  $('fundChart').innerHTML = [['ADD', pA, rA], ['DDS', pD, rD]].map(([name, p, r]) => `
+    <div class="barrow">
+      <span><b>${name}</b></span>
+      <div class="track">
+        <i class="seg" style="width:100%;background:#28618b"></i>
+        <i class="seg" style="width:${pct(r, p)}%;background:#168b83;margin-left:-100%"></i>
+      </div>
+      <span class="val">${fmtPct(pct(r, p))}</span>
+    </div>
+    <div style="font-size:10px;color:#738398;margin:-8px 0 12px 0">Pagu ${rupiah(p)} · Realisasi ${rupiah(r)}</div>`).join('');
+    
+  $('percentChart').innerHTML = [['ADD', rA, pA], ['DDS', rD, pD], ['Gabungan ADD + DDS', rA + rD, pagu]].map(([name, r, p]) => `
+    <div class="progress-item">
+      <div class="phead"><b>${name}</b><span>${fmtPct(pct(r, p))}</span></div>
+      <div class="progress"><i style="width:${Math.min(100, pct(r, p))}%"></i></div>
+    </div>`).join('') + `
+    <div class="progress-item">
+      <div class="phead"><b>Dana Lainnya</b><span>${rupiah(other)}</span></div>
+      <div style="font-size:10px;color:#8290a0">Ditampilkan sebagai komponen tambahan pada total realisasi</div>
+    </div>`;
+
+  let g = {};
+  a.forEach(x => (g[x.kecamatan] ??= []).push(x));
+  let ks = Object.keys(g).sort((x, y) => x.localeCompare(y, 'id'));
+  
+  $('kecChart').innerHTML = ks.length ? ks.map(k => {
+    let v = g[k], p = sum(v, 'paguADD') + sum(v, 'paguDDS'), r = sum(v, 'realisasiADD') + sum(v, 'realisasiDDS');
+    return `
+      <div class="barrow">
+        <span title="${esc(k)}"><b>${esc(k)}</b></span>
+        <div class="track"><i class="seg" style="width:${pct(r, p)}%;background:#168b83"></i></div>
+        <span class="val">${fmtPct(pct(r, p))}</span>
+      </div>`;
+  }).join('') : '<div class="empty">Tidak ada data untuk filter ini.</div>';
+
+  $('count').textContent = n + ' desa ditampilkan';
+  
+  $('tbody').innerHTML = a.length ? a.slice().sort((x, y) => x.kecamatan.localeCompare(y.kecamatan, 'id') || x.desa.localeCompare(y.desa, 'id')).map((x, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${esc(x.kecamatan)}</td>
+      <td><b>${esc(x.desa)}</b></td>
+      <td>${rupiah(x.totalDana)}</td>
+      <td>${rupiah(x.paguADD)}</td>
+      <td>${rupiah(x.realisasiADD)}</td>
+      <td class="pct">${fmtPct(x.persenADD)}</td>
+      <td>${rupiah(x.paguDDS)}</td>
+      <td>${rupiah(x.realisasiDDS)}</td>
+      <td class="pct">${fmtPct(x.persenDDS)}</td>
+      <td>${rupiah(x.danaLainnya)}</td>
+      <td><b>${rupiah(x.totalRealisasi)}</b></td>
+    </tr>`).join('') : '<tr><td colspan="12" class="empty">Tidak ada data sesuai filter.</td></tr>';
+}
+
+// Event Listeners
+$('kec').addEventListener('change', () => { syncDesa(); render(); });
+$('desa').addEventListener('change', render);
+$('search').addEventListener('input', render);
+$('reset').addEventListener('click', () => { $('kec').value = ''; $('desa').value = ''; $('search').value = ''; syncDesa(); render(); });
+$('sync').addEventListener('click', fetchData);
+
+$('csv').addEventListener('click', () => {
+  let a = rowsNow(), headers = ['Kecamatan','Desa','Total Dana','Pagu ADD','Realisasi ADD','% ADD','Pagu DDS','Realisasi DDS','% DDS','Dana Lainnya','Total Realisasi'];
+  let keys = ['kecamatan','desa','totalDana','paguADD','realisasiADD','persenADD','paguDDS','realisasiDDS','persenDDS','danaLainnya','totalRealisasi'];
+  let lines = [headers, ...a.map(x => keys.map(k => x[k]))].map(r => r.map(v => '"' + String(v ?? '').replace(/"/g, '""') + '"').join(';')).join('\r\n');
+  let blob = new Blob(['\ufeff' + lines], {type: 'text/csv;charset=utf-8;'}), url = URL.createObjectURL(blob), link = document.createElement('a');
+  link.href = url;
+  link.download = 'Realisasi_Dana_Desa_Sikka.csv';
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+// Auto-Refresh tiap 5 menit (300.000 ms)
+setInterval(fetchData, 300000);
+
+// Inisialisasi awal
+fetchData();
+</script>
+</body>
+</html>
